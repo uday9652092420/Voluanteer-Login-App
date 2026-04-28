@@ -8,11 +8,28 @@ class DashboardView extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Dashboard")),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
+      appBar: AppBar(
+        title: Center(
+          child: const Text(
+            "DashBoard",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        backgroundColor: const Color.fromARGB(255, 14, 151, 214),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 80),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            // Add your action here
+          },
+          label: const Text("Add Booking"),
+          icon: const Icon(Icons.add),
+        ),
       ),
 
       body: Padding(

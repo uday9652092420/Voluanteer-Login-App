@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../views/login_view.dart';
-import '../bindings/login_binding.dart'; // ✅ IMPORTANT
+import '../bindings/login_binding.dart';
+
+import '../views/dashboard_view.dart'; // ✅ added
+import '../bindings/dashboard_binding.dart'; // ✅ added
+
 import 'app_routes.dart';
 
 class AppPages {
@@ -10,15 +14,13 @@ class AppPages {
     GetPage(
       name: Routes.LOGIN,
       page: () => LoginView(),
-      binding: LoginBinding(), // ✅ Now works
+      binding: LoginBinding(),
     ),
 
     GetPage(
       name: Routes.DASHBOARD,
-      page: () => Scaffold(
-        appBar: AppBar(title: Text("Dashboa")),
-        body: Center(child: Text("Welcome to Dashboard")),
-      ),
+      page: () => const DashboardView(),
+      binding: DashboardBinding(),
     ),
   ];
 }

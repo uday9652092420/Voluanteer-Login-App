@@ -16,7 +16,7 @@ class AppPages {
     GetPage(
       name: Routes.DASHBOARD,
       page: () => Scaffold(
-        appBar: AppBar(title: Text("Dashboard")),
+        appBar: AppBar(title: Text("Dashboa")),
         body: Center(child: Text("Welcome to Dashboard")),
       ),
     ),

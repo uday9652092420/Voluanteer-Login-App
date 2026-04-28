@@ -24,11 +24,19 @@ class DashboardView extends GetView<DashboardController> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 80),
         child: FloatingActionButton.extended(
+          backgroundColor: const Color.fromARGB(255, 40, 189, 235),
           onPressed: () {
             // Add your action here
           },
-          label: const Text("Add Booking"),
-          icon: const Icon(Icons.add),
+          label: const Text(
+            "New Counter Booking",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          icon: const Icon(Icons.add, color: Colors.white),
         ),
       ),
 

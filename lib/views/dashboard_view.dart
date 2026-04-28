@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:login_app/themes/app_theme.dart';
 import '../controllers/dashboard_controller.dart';
 
 class DashboardView extends GetView<DashboardController> {
@@ -19,7 +20,7 @@ class DashboardView extends GetView<DashboardController> {
             ),
           ),
         ),
-        backgroundColor: const Color.fromARGB(255, 14, 151, 214),
+        backgroundColor: AppColors.primary, // Change this to your desired color
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 80),

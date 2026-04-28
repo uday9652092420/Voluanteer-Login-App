@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:login_app/themes/app_theme.dart';
 
 import '../controllers/login_controller.dart';
 
@@ -16,7 +17,7 @@ class LoginView extends GetView<LoginController> {
             fontSize: 20,
           ),
         ),
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: AppColors.primary,
         centerTitle: true,
       ),
       body: Padding(
@@ -48,6 +49,10 @@ class LoginView extends GetView<LoginController> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary, // ✅ button bg color
+                  foregroundColor: Colors.white, // ✅ text color
+                ),
                 onPressed: controller.login,
                 child: Text(
                   "Login",

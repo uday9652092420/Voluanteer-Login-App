@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Volunteer App',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
+
+      theme: AppTheme.lightTheme,
       initialRoute: Routes.LOGIN,
       getPages: AppPages.pages,
     );

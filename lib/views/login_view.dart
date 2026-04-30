@@ -10,7 +10,7 @@ class LoginView extends GetView<LoginController> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Voluanteer Login",
+          "Volunteer Login",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -25,6 +25,21 @@ class LoginView extends GetView<LoginController> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            //image
+            Image.asset("assets/logo.png", height: 150, width: 150),
+
+            SizedBox(height: 20),
+
+            Text(
+              "Darul Uloom Sabeelus Salam",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.black,
+              ),
+            ),
+
+            SizedBox(height: 20),
             TextField(
               controller: controller.usernameController,
               decoration: InputDecoration(

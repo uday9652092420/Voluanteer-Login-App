@@ -43,21 +43,11 @@ class DashboardView extends GetView<DashboardController> {
 
       body: Padding(
         padding: const EdgeInsets.all(12),
+
         child: Column(
           children: [
             /// 🔹 Summary Cards
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _card("Remaining", "0/0/0"),
-                _card("Booked", "2/0/0"),
-                _card("Hissas", "8/0/0"),
-              ],
-            ),
-
-            const SizedBox(height: 15),
-
-            /// 🔹 Search Field
+            ///  /// 🔹 Search Field
             TextField(
               decoration: InputDecoration(
                 hintText: "Search Bookings",
@@ -66,6 +56,16 @@ class DashboardView extends GetView<DashboardController> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
+            ),
+
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _card("Remaining", "0/0/0"),
+                _card("Booked", "2/0/0"),
+                _card("Hissas", "8/0/0"),
+              ],
             ),
 
             const SizedBox(height: 15),
@@ -144,6 +144,7 @@ class DashboardView extends GetView<DashboardController> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
                       ),
                     ),
                     IconButton(
@@ -165,6 +166,14 @@ class DashboardView extends GetView<DashboardController> {
                     Expanded(child: _inputField("Animal Type")),
                     const SizedBox(width: 10),
                     Expanded(child: _inputField("Hissas")),
+                  ],
+                ),
+
+                Row(
+                  children: [
+                    Expanded(child: _inputField("Per Day Capacity")),
+                    const SizedBox(width: 10),
+                    Expanded(child: _inputField("Animal Count (Auto)")),
                   ],
                 ),
 

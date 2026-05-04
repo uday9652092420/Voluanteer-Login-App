@@ -11,11 +11,7 @@ class LoginView extends GetView<LoginController> {
       appBar: AppBar(
         title: Text(
           "Volunteer Login",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: AppColors.primary,
         centerTitle: true,
@@ -25,25 +21,25 @@ class LoginView extends GetView<LoginController> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            //image
-            Image.asset("assets/logo.png", height: 150, width: 150),
+            Image.asset("assets/logo.png", height: 150),
 
             SizedBox(height: 20),
 
             Text(
               "Darul Uloom Sabeelus Salam",
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: AppColors.black,
               ),
             ),
 
             SizedBox(height: 20),
+
             TextField(
               controller: controller.usernameController,
               decoration: InputDecoration(
-                labelText: "Enter Username",
+                labelText: "Username",
                 border: OutlineInputBorder(),
               ),
             ),
@@ -54,32 +50,33 @@ class LoginView extends GetView<LoginController> {
               controller: controller.passwordController,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: "Enter Password",
+                labelText: "Password",
                 border: OutlineInputBorder(),
               ),
             ),
 
             SizedBox(height: 30),
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary, // ✅ button bg color
-                  foregroundColor: Colors.white, // ✅ text color
-                ),
-                onPressed: controller.login,
-                child: Text(
-                  "Login",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-
-                    fontSize: 18,
+            /// 🔥 BUTTON WITH LOADING
+            Obx(() => SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : controller.login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: controller.isLoading.value
+                        ? CircularProgressIndicator(color: Colors.white)
+                        : Text(
+                            "Login",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                   ),
-                ),
-              ),
-            ),
+                )),
           ],
         ),
       ),

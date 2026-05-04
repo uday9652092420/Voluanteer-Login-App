@@ -30,6 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  http: ^0.13.6
+
+  get_storage: ^2.1.1 
   
   get: ^4.6.6
 

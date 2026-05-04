@@ -8,50 +8,30 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
+    final c = controller;
+
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: const Text(
-            "DashBoard",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        backgroundColor: AppColors.primary, // Change this to your desired color
+        title: const Text("Dashboard"),
+        centerTitle: true,
+        backgroundColor: AppColors.primary,
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80),
-        child: FloatingActionButton.extended(
-          backgroundColor: const Color.fromARGB(255, 40, 189, 235),
-          onPressed: () {
-            _showBookingDialog(context);
-          },
-          label: const Text(
-            "New Counter Booking",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          icon: const Icon(Icons.add, color: Colors.white),
-        ),
+
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _showBookingDialog(context),
+        backgroundColor: Colors.blue,
+        icon: const Icon(Icons.add),
+        label: const Text("New Booking"),
       ),
 
       body: Padding(
         padding: const EdgeInsets.all(12),
-
         child: Column(
           children: [
-            /// 🔹 Summary Cards
-            ///  /// 🔹 Search Field
             TextField(
               decoration: InputDecoration(
                 hintText: "Search Bookings",
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -59,41 +39,45 @@ class DashboardView extends GetView<DashboardController> {
             ),
 
             const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _card("Remaining", "0/0/0"),
-                _card("Booked", "2/0/0"),
-                _card("Hissas", "8/0/0"),
-              ],
+
+            Obx(
+              () => Row(
+                children: [
+                  _card("Hissas", "${c.hissasD1}/${c.hissasD2}/${c.hissasD3}"),
+                  _card(
+                    "Booked",
+                    "${c.bookedD1.value.toStringAsFixed(1)}/"
+                        "${c.bookedD2.value.toStringAsFixed(1)}/"
+                        "${c.bookedD3.value.toStringAsFixed(1)}",
+                  ),
+                  _card("Remaining", "0/0/0"),
+                ],
+              ),
             ),
 
             const SizedBox(height: 15),
 
-            /// 🔹 List
             Expanded(
-              child: Obx(
-                () => ListView.builder(
-                  itemCount: controller.bookings.length,
-                  itemBuilder: (context, index) {
-                    final item = controller.bookings[index];
+              child: Obx(() {
+                if (c.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                return ListView.builder(
+                  itemCount: c.bookings.length,
+                  itemBuilder: (_, i) {
+                    final b = c.bookings[i];
 
                     return Card(
                       child: ListTile(
-                        title: Text(item["receipt"]!),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(item["centre"]!),
-                            Text("${item["day"]} • ${item["type"]}"),
-                          ],
-                        ),
-                        trailing: Text(item["amount"]!),
+                        title: Text(b.code),
+                        subtitle: Text("${b.centreName} • ${b.dayCode}"),
+                        trailing: Text("₹${b.amount}"),
                       ),
                     );
                   },
-                ),
-              ),
+                );
+              }),
             ),
           ],
         ),
@@ -101,20 +85,16 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-  /// 🔹 Card Widget
-  Widget _card(String title, String value) {
+  Widget _card(String t, String v) {
     return Expanded(
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              Text(title, style: TextStyle(fontSize: 12)),
-              SizedBox(height: 5),
-              Text(
-                value,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+              Text(t),
+              const SizedBox(height: 5),
+              Text(v, style: const TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
         ),
@@ -123,114 +103,128 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   void _showBookingDialog(BuildContext context) {
+    final c = controller;
+
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (_) {
         return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                /// 🔹 Title
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "New Booking",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
+            child: Obx(() {
+              return Column(
+                children: [
+                  const Text(
+                    "New Booking",
+                    // ignore: deprecated_member_use
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Get.back(),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  DropdownButtonFormField(
+                    items: c.centres
+                        .map<DropdownMenuItem>(
+                          (e) => DropdownMenuItem(
+                            value: e["id"].toString(),
+                            child: Text(e["name"]),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (v) {
+                      c.selectedCentreId.value = v.toString();
+                      c.recalculate();
+                    },
+                    decoration: const InputDecoration(labelText: "Centre"),
+                  ),
+                  const SizedBox(height: 10),
+                  DropdownButtonFormField(
+                    items: ["day1", "day2", "day3"]
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                        .toList(),
+                    onChanged: (v) {
+                      c.selectedDay.value = v.toString();
+                      c.recalculate();
+                    },
+                    decoration: const InputDecoration(labelText: "Day"),
+                  ),
+                  const SizedBox(height: 10),
+                  DropdownButtonFormField(
+                    items: ["Matloob", "Waqf (Hyderabad)", "Waqf"]
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                        .toList(),
+                    onChanged: (v) => c.bookingType.value = v.toString(),
+                    decoration: const InputDecoration(
+                      labelText: "Booking Type",
                     ),
-                  ],
-                ),
-
-                const SizedBox(height: 10),
-
-                /// 🔹 Form Fields
-                _inputField("Centre"),
-                _inputField("Day"),
-                _inputField("Booking Type"),
-
-                Row(
-                  children: [
-                    Expanded(child: _inputField("Animal Type")),
-                    const SizedBox(width: 10),
-                    Expanded(child: _inputField("Hissas")),
-                  ],
-                ),
-
-                Row(
-                  children: [
-                    Expanded(child: _inputField("Per Day Capacity")),
-                    const SizedBox(width: 10),
-                    Expanded(child: _inputField("Animal Count (Auto)")),
-                  ],
-                ),
-
-                Row(
-                  children: [
-                    Expanded(child: _inputField("Amount Type")),
-                    const SizedBox(width: 10),
-                    Expanded(child: _inputField("Amount")),
-                  ],
-                ),
-
-                _inputField("Receipt No"),
-                _inputField("Reason"),
-                _inputField("Received Amount"),
-
-                const SizedBox(height: 15),
-
-                /// 🔹 Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Get.back(),
-                      child: const Text("Close"),
+                  ),
+                  const SizedBox(height: 10),
+                  DropdownButtonFormField(
+                    items: ["Big", "Small"]
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                        .toList(),
+                    onChanged: (v) {
+                      c.animalType.value = v.toString();
+                      c.recalculate();
+                    },
+                    decoration: const InputDecoration(labelText: "Animal Type"),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: c.hissasController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: "Hissas"),
+                    onChanged: (_) => c.recalculate(),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: c.animalCountController,
+                    readOnly: true,
+                    decoration: const InputDecoration(
+                      labelText: "Animal Count",
                     ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                      ),
-                      onPressed: () {
-                        // TODO: Save logic
-                        Get.back();
-                      },
-                      child: const Text("Save"),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: c.perDayCapacityController,
+                    readOnly: true,
+                    decoration: const InputDecoration(
+                      labelText: "Per Day Capacity",
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: c.amountController,
+                    readOnly: true,
+                    decoration: const InputDecoration(labelText: "Amount"),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: c.receivedController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: "Received Amount",
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  ElevatedButton(
+                    onPressed: () async {
+                      await c.createBooking();
+                      Get.back();
+                    },
+                    child: const Text("Save"),
+                  ),
+                ],
+              );
+            }),
           ),
         );
       },
-    );
-  }
-
-  Widget _inputField(String hint) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: TextField(
-        decoration: InputDecoration(
-          labelText: hint,
-          filled: true,
-          fillColor: Colors.grey.shade100,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      ),
     );
   }
 }

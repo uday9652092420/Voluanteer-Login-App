@@ -17,11 +17,20 @@ class DashboardView extends GetView<DashboardController> {
         backgroundColor: AppColors.primary,
       ),
 
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showBookingDialog(context),
-        backgroundColor: Colors.blue,
-        icon: const Icon(Icons.add),
-        label: const Text("New Booking"),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 50),
+        child: FloatingActionButton.extended(
+          onPressed: () => _showBookingDialog(context),
+          backgroundColor: AppColors.primary,
+          icon: const Icon(Icons.add, color: AppColors.white),
+          label: const Text(
+            "New Counter Slot Booking",
+            style: TextStyle(
+              color: AppColors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ),
 
       body: Padding(
@@ -114,13 +123,29 @@ class DashboardView extends GetView<DashboardController> {
             child: Obx(() {
               return Column(
                 children: [
-                  const Text(
-                    "New Booking",
-                    // ignore: deprecated_member_use
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "New Booking",
+                        // ignore: deprecated_member_use
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        icon: Icon(
+                          Icons.close,
+                          color: AppColors.error,
+                          size: 25,
+                        ),
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 10),
@@ -179,7 +204,7 @@ class DashboardView extends GetView<DashboardController> {
                     decoration: const InputDecoration(labelText: "Hissas"),
                     onChanged: (_) => c.recalculate(),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
                   TextField(
                     controller: c.animalCountController,
                     readOnly: true,
@@ -187,7 +212,7 @@ class DashboardView extends GetView<DashboardController> {
                       labelText: "Animal Count",
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
                   TextField(
                     controller: c.perDayCapacityController,
                     readOnly: true,
@@ -195,13 +220,19 @@ class DashboardView extends GetView<DashboardController> {
                       labelText: "Per Day Capacity",
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
                   TextField(
                     controller: c.amountController,
                     readOnly: true,
                     decoration: const InputDecoration(labelText: "Amount"),
                   ),
                   const SizedBox(height: 10),
+                  TextField(
+                    controller: c.receivedController,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(labelText: "Reason"),
+                  ),
+                  const SizedBox(height: 15),
                   TextField(
                     controller: c.receivedController,
                     keyboardType: TextInputType.number,

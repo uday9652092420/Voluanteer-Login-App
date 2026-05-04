@@ -30,7 +30,7 @@ class LoginView extends GetView<LoginController> {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppColors.black,
+                color: AppColors.primary,
               ),
             ),
 
@@ -58,25 +58,29 @@ class LoginView extends GetView<LoginController> {
             SizedBox(height: 30),
 
             /// 🔥 BUTTON WITH LOADING
-            Obx(() => SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: controller.isLoading.value
-                        ? null
-                        : controller.login,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: controller.isLoading.value
-                        ? CircularProgressIndicator(color: Colors.white)
-                        : Text(
-                            "Login",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
+            Obx(
+              () => SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : controller.login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
                   ),
-                )),
+                  child: controller.isLoading.value
+                      ? CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          "Login",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

@@ -172,6 +172,31 @@ class DashboardController extends GetxController {
     amountController.text = (h * perHissaAmount).toString();
   }
 
+  /// 🔥 FETCH NEXT RECEIPT No
+  Future<void> fetchNextReceiptNumber() async {
+    try {
+      final token = box.read("token");
+
+      final res = await http.get(
+        Uri.parse(
+          "http://192.168.1.230:3002/api/qurbani-counter-slot-bookings/next-receipt-preview",
+        ),
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+
+        /// API response example:
+        /// { "receiptNo": "CTR-0005" }
+
+        receiptController.text = data["receiptNo"]?.toString() ?? "";
+      }
+    } catch (e) {
+      print("Receipt fetch error: $e");
+    }
+  }
+
   /// 🔥 CREATE BOOKING
   Future<void> createBooking() async {
     final token = box.read("token");
@@ -198,6 +223,9 @@ class DashboardController extends GetxController {
         "amountType": amountType.value,
 
         "amount": int.parse(amountController.text),
+
+        "receiptNo": receiptController.text,
+
         "reason": reasonController.text,
       }),
     );

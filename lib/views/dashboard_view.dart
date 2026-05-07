@@ -116,6 +116,7 @@ class DashboardView extends GetView<DashboardController> {
 
   void _showBookingDialog(BuildContext context) {
     final c = controller;
+    c.fetchNextReceiptNumber();
 
     showDialog(
       context: context,
@@ -249,7 +250,8 @@ class DashboardView extends GetView<DashboardController> {
                   //ReceiptNo
                   TextField(
                     controller: c.receiptController,
-                    keyboardType: TextInputType.text,
+                    readOnly: true,
+
                     decoration: const InputDecoration(labelText: "Receipt No"),
                   ),
                   const SizedBox(height: 10),

@@ -143,19 +143,6 @@ class DashboardController extends GetxController {
       animalCountController.text = h.toString();
     }
 
-    /// 🔹 Capacity from API
-    var rate = rates.firstWhereOrNull(
-      (r) =>
-          r["centreId"].toString() == selectedCentreId.value &&
-          r["dayCode"].toString() == selectedDay.value,
-    );
-
-    if (rate != null) {
-      perDayCapacityController.text = rate["capacity"].toString();
-    } else {
-      perDayCapacityController.text = "0";
-    }
-
     /// ✅ Amount Type
     amountTypeController.text = amountType.value;
 
@@ -170,6 +157,46 @@ class DashboardController extends GetxController {
 
     /// ✅ Total Amount
     amountController.text = (h * perHissaAmount).toString();
+
+    /// ===================================================
+    /// ✅ DYNAMIC PER DAY CAPACITY FROM API
+    /// ===================================================
+
+    try {
+      /// total centers
+      int totalCenters = centres.length;
+
+      if (totalCenters == 0) {
+        perDayCapacityController.text = "0";
+        return;
+      }
+
+      /// find matching animal type from API
+      var animalRate = rates.firstWhereOrNull(
+        (r) =>
+            r["animalType"].toString().toLowerCase() ==
+            animalType.value.toLowerCase(),
+      );
+
+      if (animalRate == null) {
+        perDayCapacityController.text = "0";
+        return;
+      }
+
+      /// total capacity from API
+      double totalCapacity =
+          double.tryParse(animalRate["totalCapacity"].toString()) ?? 0;
+
+      /// per center
+      double perCenterCapacity = totalCapacity / totalCenters;
+
+      /// per day (3 days)
+      double perDayCapacity = perCenterCapacity / 3;
+
+      perDayCapacityController.text = perDayCapacity.toStringAsFixed(0);
+    } catch (e) {
+      perDayCapacityController.text = "0";
+    }
   }
 
   /// 🔥 FETCH NEXT RECEIPT No

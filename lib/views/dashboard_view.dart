@@ -12,7 +12,10 @@ class DashboardView extends GetView<DashboardController> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Dashboard"),
+        title: const Text(
+          "DASHBOARD",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         backgroundColor: AppColors.primary,
       ),
@@ -57,7 +60,7 @@ class DashboardView extends GetView<DashboardController> {
                     "Booked",
                     "${c.bookedD1.value.toStringAsFixed(1)}/"
                         "${c.bookedD2.value.toStringAsFixed(1)}/"
-                        "${c.bookedD3.value.toStringAsFixed(1)}",
+                        "${c.bookedD3.value.toStringAsFixed(1)}/",
                   ),
                   _card("Remaining", "0/0/0"),
                 ],
@@ -204,6 +207,8 @@ class DashboardView extends GetView<DashboardController> {
                     decoration: const InputDecoration(labelText: "Hissas"),
                     onChanged: (_) => c.recalculate(),
                   ),
+
+                  //animalcount
                   const SizedBox(height: 15),
                   TextField(
                     controller: c.animalCountController,
@@ -211,6 +216,19 @@ class DashboardView extends GetView<DashboardController> {
                     decoration: const InputDecoration(
                       labelText: "Animal Count",
                     ),
+                  ),
+
+                  //amounttype
+                  const SizedBox(height: 15),
+                  DropdownButtonFormField(
+                    items: ["Local", "Out-of-State"]
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                        .toList(),
+                    onChanged: (v) {
+                      c.amountType.value = v.toString();
+                      c.recalculate();
+                    },
+                    decoration: const InputDecoration(labelText: "Amount Type"),
                   ),
                   const SizedBox(height: 15),
                   TextField(
@@ -220,19 +238,30 @@ class DashboardView extends GetView<DashboardController> {
                       labelText: "Per Day Capacity",
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: c.amountController,
                     readOnly: true,
                     decoration: const InputDecoration(labelText: "Amount"),
                   ),
                   const SizedBox(height: 10),
+
+                  //ReceiptNo
                   TextField(
-                    controller: c.receivedController,
+                    controller: c.receiptController,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(labelText: "Receipt No"),
+                  ),
+                  const SizedBox(height: 10),
+
+                  //Reason
+                  TextField(
+                    controller: c.reasonController,
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(labelText: "Reason"),
                   ),
                   const SizedBox(height: 15),
+
                   TextField(
                     controller: c.receivedController,
                     keyboardType: TextInputType.number,
@@ -248,7 +277,7 @@ class DashboardView extends GetView<DashboardController> {
                       await c.createBooking();
                       Get.back();
                     },
-                    child: const Text("Save"),
+                    child: const Text("Book"),
                   ),
                 ],
               );

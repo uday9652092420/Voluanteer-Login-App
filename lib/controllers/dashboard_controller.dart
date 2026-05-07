@@ -30,9 +30,13 @@ class DashboardController extends GetxController {
   var bookingType = "".obs;
   var animalType = "".obs;
 
+  /// ✅ NEW
+  var amountType = "".obs;
+
   /// 🔹 CONTROLLERS
   final hissasController = TextEditingController();
   final animalCountController = TextEditingController();
+  final amountTypeController = TextEditingController();
   final perDayCapacityController = TextEditingController();
   final amountController = TextEditingController();
   final receiptController = TextEditingController();
@@ -87,7 +91,7 @@ class DashboardController extends GetxController {
     }
   }
 
-  /// 🔥 FETCH RATES (ONLY FOR CAPACITY)
+  /// 🔥 FETCH RATES
   Future<void> fetchRates() async {
     final token = box.read("token");
 
@@ -128,7 +132,7 @@ class DashboardController extends GetxController {
     }
   }
 
-  /// 🔥 MAIN CALCULATION (UPDATED AS PER REQUIREMENT)
+  /// 🔥 MAIN CALCULATION
   void recalculate() {
     int h = int.tryParse(hissasController.text) ?? 0;
 
@@ -152,8 +156,20 @@ class DashboardController extends GetxController {
       perDayCapacityController.text = "0";
     }
 
-    /// 🔹 Amount fixed
-    amountController.text = (h * 5000).toString();
+    /// ✅ Amount Type
+    amountTypeController.text = amountType.value;
+
+    /// ✅ Per Hissa Amount
+    int perHissaAmount = 0;
+
+    if (amountType.value == "Local") {
+      perHissaAmount = 5000;
+    } else if (amountType.value == "Out-of-State") {
+      perHissaAmount = 6000;
+    }
+
+    /// ✅ Total Amount
+    amountController.text = (h * perHissaAmount).toString();
   }
 
   /// 🔥 CREATE BOOKING
@@ -177,6 +193,10 @@ class DashboardController extends GetxController {
         "animalType": animalType.value,
         "hissas": int.parse(hissasController.text),
         "bookingType": bookingType.value,
+
+        /// ✅ NEW
+        "amountType": amountType.value,
+
         "amount": int.parse(amountController.text),
         "reason": reasonController.text,
       }),
@@ -189,6 +209,7 @@ class DashboardController extends GetxController {
   void clearForm() {
     hissasController.clear();
     animalCountController.clear();
+    amountTypeController.clear();
     perDayCapacityController.clear();
     amountController.clear();
     receiptController.clear();
@@ -199,5 +220,6 @@ class DashboardController extends GetxController {
     selectedDay.value = "";
     bookingType.value = "";
     animalType.value = "";
+    amountType.value = "";
   }
 }

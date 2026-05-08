@@ -136,12 +136,37 @@ class DashboardController extends GetxController {
   void recalculate() {
     int h = int.tryParse(hissasController.text) ?? 0;
 
-    /// 🔹 Animal count
-    if (animalType.value == "Big") {
-      animalCountController.text = (h / 7).toStringAsFixed(2);
-    } else {
-      animalCountController.text = h.toString();
+    /// ===================================================
+    /// ✅ EXISTING + CURRENT ANIMAL COUNT
+    /// ===================================================
+
+    double existingAnimalCount = 0;
+
+    for (var b in bookings) {
+      /// same animal type only
+      if (b.animalType.toLowerCase() == animalType.value.toLowerCase()) {
+        if (b.animalType.toLowerCase() == "big") {
+          existingAnimalCount += (b.hissas / 7);
+        } else {
+          existingAnimalCount += b.hissas.toDouble();
+        }
+      }
     }
+
+    /// current entered animal count
+    double currentAnimalCount = 0;
+
+    if (animalType.value == "Big") {
+      currentAnimalCount = h / 7;
+    } else {
+      currentAnimalCount = h.toDouble();
+    }
+
+    /// final count
+    double finalAnimalCount = existingAnimalCount + currentAnimalCount;
+
+    /// display
+    animalCountController.text = finalAnimalCount.toStringAsFixed(2);
 
     /// ✅ Amount Type
     amountTypeController.text = amountType.value;

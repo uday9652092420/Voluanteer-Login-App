@@ -274,11 +274,6 @@ class DashboardController extends GetxController {
   Future<void> createBooking() async {
     final token = box.read("token");
 
-    if (amountController.text != receivedController.text) {
-      Get.snackbar("Error", "Received amount must match total amount");
-      return;
-    }
-
     await http.post(
       Uri.parse("http://192.168.1.230:3002/api/qurbani-counter-slot-bookings"),
       headers: {

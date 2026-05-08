@@ -46,10 +46,18 @@ class DashboardController extends GetxController {
   final box = GetStorage();
 
   @override
+  @override
   void onInit() {
     fetchBookings();
     fetchCentres();
     fetchRates();
+
+    /// default values automatically
+    selectedDay.value = "day1";
+    bookingType.value = "Matloob";
+    animalType.value = "Big";
+    amountType.value = "Local";
+
     super.onInit();
   }
 
@@ -71,6 +79,7 @@ class DashboardController extends GetxController {
         final List data = jsonDecode(res.body);
         bookings.value = data.map((e) => Booking.fromJson(e)).toList();
         calculateSummary();
+        recalculate();
       }
     } finally {
       isLoading.value = false;
@@ -140,32 +149,44 @@ class DashboardController extends GetxController {
     /// ✅ EXISTING + CURRENT ANIMAL COUNT
     /// ===================================================
 
+    /// ===================================================
+    /// ✅ EXISTING + CURRENT ANIMAL COUNT
+    /// ===================================================
+
     double existingAnimalCount = 0;
 
+    /// calculate existing animal count from DB
     for (var b in bookings) {
-      /// same animal type only
       if (b.animalType.toLowerCase() == animalType.value.toLowerCase()) {
+        /// BIG => 7 hissas = 1 animal
         if (b.animalType.toLowerCase() == "big") {
           existingAnimalCount += (b.hissas / 7);
-        } else {
+        }
+        /// SMALL => 1 hissa = 1 animal
+        else {
           existingAnimalCount += b.hissas.toDouble();
         }
       }
     }
 
-    /// current entered animal count
+    /// current entered hissas animal count
     double currentAnimalCount = 0;
 
-    if (animalType.value == "Big") {
-      currentAnimalCount = h / 7;
-    } else {
-      currentAnimalCount = h.toDouble();
+    if (h > 0) {
+      /// BIG => 7 hissas = 1 animal
+      if (animalType.value == "Big") {
+        currentAnimalCount = h / 7;
+      }
+      /// SMALL => 1 hissa = 1 animal
+      else {
+        currentAnimalCount = h.toDouble();
+      }
     }
 
-    /// final count
+    /// final animal count
     double finalAnimalCount = existingAnimalCount + currentAnimalCount;
 
-    /// display
+    /// display in field
     animalCountController.text = finalAnimalCount.toStringAsFixed(2);
 
     /// ✅ Amount Type
@@ -288,7 +309,6 @@ class DashboardController extends GetxController {
 
   void clearForm() {
     hissasController.clear();
-    animalCountController.clear();
     amountTypeController.clear();
     perDayCapacityController.clear();
     amountController.clear();
@@ -296,10 +316,13 @@ class DashboardController extends GetxController {
     reasonController.clear();
     receivedController.clear();
 
-    selectedCentreId.value = "";
-    selectedDay.value = "";
-    bookingType.value = "";
-    animalType.value = "";
-    amountType.value = "";
+    /// keep defaults
+    selectedDay.value = "day1";
+    bookingType.value = "Matloob";
+    animalType.value = "Big";
+    amountType.value = "Local";
+
+    /// refresh counts
+    recalculate();
   }
 }

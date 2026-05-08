@@ -142,6 +142,7 @@ class DashboardView extends GetView<DashboardController> {
                       IconButton(
                         onPressed: () {
                           Get.back();
+                          controller.clearForm();
                         },
                         icon: Icon(
                           Icons.close,
@@ -170,7 +171,11 @@ class DashboardView extends GetView<DashboardController> {
                     decoration: const InputDecoration(labelText: "Centre"),
                   ),
                   const SizedBox(height: 10),
+                  // DAY DROPDOWN
                   DropdownButtonFormField(
+                    value: c.selectedDay.value.isEmpty
+                        ? null
+                        : c.selectedDay.value,
                     items: ["day1", "day2", "day3"]
                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
@@ -178,20 +183,29 @@ class DashboardView extends GetView<DashboardController> {
                       c.selectedDay.value = v.toString();
                       c.recalculate();
                     },
-                    decoration: const InputDecoration(labelText: "Day"),
+                    decoration: const InputDecoration(),
                   ),
                   const SizedBox(height: 10),
+
+                  // BOOKING TYPE DROPDOWN
                   DropdownButtonFormField(
+                    value: c.bookingType.value.isEmpty
+                        ? null
+                        : c.bookingType.value,
                     items: ["Matloob", "Waqf (Hyderabad)", "Waqf"]
                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
-                    onChanged: (v) => c.bookingType.value = v.toString(),
-                    decoration: const InputDecoration(
-                      labelText: "Booking Type",
-                    ),
+                    onChanged: (v) {
+                      c.bookingType.value = v.toString();
+                    },
+                    decoration: const InputDecoration(),
                   ),
                   const SizedBox(height: 10),
+                  // ANIMAL TYPE DROPDOWN
                   DropdownButtonFormField(
+                    value: c.animalType.value.isEmpty
+                        ? null
+                        : c.animalType.value,
                     items: ["Big", "Small"]
                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
@@ -199,7 +213,7 @@ class DashboardView extends GetView<DashboardController> {
                       c.animalType.value = v.toString();
                       c.recalculate();
                     },
-                    decoration: const InputDecoration(labelText: "Animal Type"),
+                    decoration: const InputDecoration(),
                   ),
                   const SizedBox(height: 10),
                   TextField(
@@ -221,7 +235,11 @@ class DashboardView extends GetView<DashboardController> {
 
                   //amounttype
                   const SizedBox(height: 15),
+                  //amount type
                   DropdownButtonFormField(
+                    value: c.amountType.value.isEmpty
+                        ? null
+                        : c.amountType.value,
                     items: ["Local", "Out-of-State"]
                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
@@ -229,9 +247,11 @@ class DashboardView extends GetView<DashboardController> {
                       c.amountType.value = v.toString();
                       c.recalculate();
                     },
-                    decoration: const InputDecoration(labelText: "Amount Type"),
+                    decoration: const InputDecoration(),
                   ),
                   const SizedBox(height: 15),
+
+                  //perday capacity
                   TextField(
                     controller: c.perDayCapacityController,
                     readOnly: true,
@@ -239,6 +259,7 @@ class DashboardView extends GetView<DashboardController> {
                       labelText: "Per Day Capacity",
                     ),
                   ),
+
                   const SizedBox(height: 10),
                   TextField(
                     controller: c.amountController,

@@ -86,19 +86,68 @@ class DashboardController extends GetxController {
     }
   }
 
-  /// 🔥 FETCH CENTRES
+  /// 🔥 FETCH ONLY ALLOCATED CENTRE
   Future<void> fetchCentres() async {
-    final token = box.read("token");
+    try {
+      final token = box.read("token");
 
-    final res = await http.get(
-      Uri.parse("http://192.168.1.230:3002/api/qurbani-booking-centres"),
-      headers: {"Authorization": "Bearer $token"},
-    );
+      /// volunteer object saved during login
+      final volunteer = box.read("volunteer");
 
-    if (res.statusCode == 200) {
-      centres.value = jsonDecode(res.body);
+      if (volunteer == null) {
+        print("Volunteer data not found");
+        return;
+      }
+
+      /// allocated centre id
+      final centreId = volunteer["assignedCentreId"];
+
+      print("ALLOCATED CENTRE ID: $centreId");
+
+      if (centreId == null || centreId.toString().isEmpty) {
+        print("No centre allocated");
+        return;
+      }
+
+      /// get centre details
+      final res = await http.get(
+        Uri.parse(
+          "http://192.168.1.230:3002/api/qurbani-booking-centres/$centreId",
+        ),
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      print("CENTRE STATUS: ${res.statusCode}");
+      print("CENTRE BODY: ${res.body}");
+
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+
+        /// dropdown expects list
+        centres.value = [data];
+
+        /// auto selected
+        selectedCentreId.value = data["id"].toString();
+
+        recalculate();
+      }
+    } catch (e) {
+      print("Centre fetch error: $e");
     }
   }
+  // /// 🔥 FETCH CENTRES
+  // Future<void> fetchCentres() async {
+  //   final token = box.read("token");
+
+  //   final res = await http.get(
+  //     Uri.parse("http://192.168.1.230:3002/api/qurbani-booking-centres"),
+  //     headers: {"Authorization": "Bearer $token"},
+  //   );
+
+  //   if (res.statusCode == 200) {
+  //     centres.value = jsonDecode(res.body);
+  //   }
+  // }
 
   /// 🔥 FETCH RATES
   Future<void> fetchRates() async {

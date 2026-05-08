@@ -154,21 +154,21 @@ class DashboardView extends GetView<DashboardController> {
                   ),
 
                   const SizedBox(height: 10),
+                  Obx(
+                    () => DropdownButtonFormField<String>(
+                      value: c.selectedCentreId.value.isEmpty
+                          ? null
+                          : c.selectedCentreId.value,
 
-                  DropdownButtonFormField(
-                    items: c.centres
-                        .map<DropdownMenuItem>(
-                          (e) => DropdownMenuItem(
-                            value: e["id"].toString(),
-                            child: Text(e["name"]),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (v) {
-                      c.selectedCentreId.value = v.toString();
-                      c.recalculate();
-                    },
-                    decoration: const InputDecoration(labelText: "Centre"),
+                      items: c.centres.map<DropdownMenuItem<String>>((e) {
+                        return DropdownMenuItem<String>(
+                          value: e["id"].toString(),
+                          child: Text(e["name"].toString()),
+                        );
+                      }).toList(),
+
+                      onChanged: null,
+                    ),
                   ),
                   const SizedBox(height: 10),
                   // DAY DROPDOWN

@@ -17,27 +17,11 @@ class LoginController extends GetxController {
     final username = usernameController.text.trim();
     final password = passwordController.text.trim();
 
-    /// ✅ Validation
     if (username.isEmpty || password.isEmpty) {
       Get.snackbar("Error", "Please enter username & password");
       return;
     }
 
-    /// 🔥 1. STATIC LOGIN (FIRST PRIORITY)
-    if (username == "uday" && password == "12345") {
-      print("STATIC LOGIN SUCCESS");
-
-      /// Save dummy token
-      box.write("token", "static_token");
-
-      Get.snackbar("Success", "Static Login Success");
-
-      /// Navigate
-      Get.offAllNamed(Routes.DASHBOARD);
-      return; // ⚠️ STOP here (don’t call API)
-    }
-
-    /// 🔥 2. API LOGIN (REAL LOGIN)
     try {
       isLoading.value = true;
 
@@ -53,8 +37,11 @@ class LoginController extends GetxController {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        /// Save real JWT token
+        /// ✅ SAVE REAL JWT TOKEN
         box.write("token", data["token"]);
+
+        /// ✅ SAVE VOLUNTEER DATA
+        box.write("volunteer", data["volunteer"]);
 
         Get.snackbar("Success", "Login successful");
 

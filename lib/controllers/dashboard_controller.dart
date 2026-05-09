@@ -33,6 +33,9 @@ class DashboardController extends GetxController {
   /// ✅ NEW
   var amountType = "".obs;
 
+  /// volunteer allocated days
+  var allowedDays = <String>[].obs;
+
   /// 🔹 CONTROLLERS
   final hissasController = TextEditingController();
   final animalCountController = TextEditingController();
@@ -53,7 +56,8 @@ class DashboardController extends GetxController {
     fetchRates();
 
     /// default values automatically
-    selectedDay.value = "day1";
+    fetchVolunteerDays();
+
     bookingType.value = "Matloob";
     animalType.value = "Big";
     amountType.value = "Local";
@@ -135,19 +139,55 @@ class DashboardController extends GetxController {
       print("Centre fetch error: $e");
     }
   }
-  // /// 🔥 FETCH CENTRES
-  // Future<void> fetchCentres() async {
-  //   final token = box.read("token");
 
-  //   final res = await http.get(
-  //     Uri.parse("http://192.168.1.230:3002/api/qurbani-booking-centres"),
-  //     headers: {"Authorization": "Bearer $token"},
-  //   );
+  Future<void> fetchVolunteerDays() async {
+    try {
+      final token = box.read("token");
 
-  //   if (res.statusCode == 200) {
-  //     centres.value = jsonDecode(res.body);
-  //   }
-  // }
+      final volunteer = box.read("volunteer");
+
+      if (volunteer == null) {
+        print("Volunteer not found");
+        return;
+      }
+
+      final username = volunteer["username"];
+
+      print("USERNAME: $username");
+
+      final res = await http.get(
+        Uri.parse(
+          "http://192.168.1.230:3002/api/qurbani-volunteers/volunteer-days/$username",
+        ),
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      print("DAYS STATUS: ${res.statusCode}");
+      print("DAYS BODY: ${res.body}");
+
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+
+        allowedDays.clear();
+
+        /// API RESPONSE:
+        /// { "days": ["day1"] }
+
+        if (data["days"] != null) {
+          allowedDays.value = List<String>.from(data["days"]);
+        }
+
+        /// auto select first allowed day
+        if (allowedDays.isNotEmpty) {
+          selectedDay.value = allowedDays.first;
+        }
+
+        recalculate();
+      }
+    } catch (e) {
+      print("Volunteer days error: $e");
+    }
+  }
 
   /// 🔥 FETCH RATES
   Future<void> fetchRates() async {
@@ -323,32 +363,57 @@ class DashboardController extends GetxController {
   Future<void> createBooking() async {
     final token = box.read("token");
 
-    await http.post(
-      Uri.parse("http://192.168.1.230:3002/api/qurbani-counter-slot-bookings"),
-      headers: {
-        "Authorization": "Bearer $token",
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode({
-        "centreId": selectedCentreId.value,
-        "dayCode": selectedDay.value,
-        "animalType": animalType.value,
-        "hissas": int.parse(hissasController.text),
-        "bookingType": bookingType.value,
+    /// ✅ USER INPUT FIELD VALIDATIONS
 
-        /// ✅ NEW
-        "amountType": amountType.value,
+    if (hissasController.text.trim().isEmpty) {
+      Get.snackbar("Error", "Please enter hissas");
+      return;
+    }
 
-        "amount": int.parse(amountController.text),
+    if (reasonController.text.trim().isEmpty) {
+      Get.snackbar("Error", "Please enter reason");
+      return;
+    }
 
-        "receiptNo": receiptController.text,
+    if (receivedController.text.trim().isEmpty) {
+      Get.snackbar("Error", "Please enter received amount");
+      return;
+    }
 
-        "reason": reasonController.text,
-      }),
-    );
+    try {
+      await http.post(
+        Uri.parse(
+          "http://192.168.1.230:3002/api/qurbani-counter-slot-bookings",
+        ),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({
+          "centreId": selectedCentreId.value,
+          "dayCode": selectedDay.value,
+          "animalType": animalType.value,
+          "hissas": int.parse(hissasController.text),
+          "bookingType": bookingType.value,
+          "amountType": amountType.value,
+          "amount": int.parse(amountController.text),
+          "receiptNo": receiptController.text,
 
-    fetchBookings();
-    clearForm();
+          "reason": reasonController.text,
+
+          "receivedAmount": int.parse(receivedController.text),
+        }),
+      );
+
+      fetchBookings();
+      clearForm();
+      Get.back();
+
+      Get.snackbar("Success", "Booking Created");
+    } catch (e) {
+      print("CREATE BOOKING ERROR: $e");
+      Get.snackbar("Error", "Booking failed");
+    }
   }
 
   void clearForm() {

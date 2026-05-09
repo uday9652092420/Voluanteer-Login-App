@@ -152,7 +152,7 @@ class DashboardView extends GetView<DashboardController> {
                       ),
                     ],
                   ),
-
+                  //center
                   const SizedBox(height: 10),
                   Obx(
                     () => DropdownButtonFormField<String>(
@@ -171,12 +171,13 @@ class DashboardView extends GetView<DashboardController> {
                     ),
                   ),
                   const SizedBox(height: 10),
+
                   // DAY DROPDOWN
                   DropdownButtonFormField(
                     value: c.selectedDay.value.isEmpty
                         ? null
                         : c.selectedDay.value,
-                    items: ["day1", "day2", "day3"]
+                    items: c.allowedDays
                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
                     onChanged: (v) {

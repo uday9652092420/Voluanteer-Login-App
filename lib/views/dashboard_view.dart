@@ -171,20 +171,34 @@ class DashboardView extends GetView<DashboardController> {
                     ),
                   ),
                   const SizedBox(height: 10),
-
                   // DAY DROPDOWN
-                  DropdownButtonFormField(
-                    value: c.selectedDay.value.isEmpty
-                        ? null
-                        : c.selectedDay.value,
-                    items: c.allowedDays
-                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                        .toList(),
-                    onChanged: (v) {
-                      c.selectedDay.value = v.toString();
-                      c.recalculate();
-                    },
-                    decoration: const InputDecoration(),
+                  Obx(
+                    () => DropdownButtonFormField<String>(
+                      value: c.allowedDays.contains(c.selectedDay.value)
+                          ? c.selectedDay.value
+                          : null,
+
+                      items: c.allowedDays
+                          .toSet() // ✅ remove duplicates
+                          .map<DropdownMenuItem<String>>(
+                            (e) => DropdownMenuItem<String>(
+                              value: e,
+                              child: Text(e),
+                            ),
+                          )
+                          .toList(),
+
+                      onChanged: (v) {
+                        if (v != null) {
+                          c.selectedDay.value = v;
+                          c.recalculate();
+                        }
+                      },
+
+                      decoration: const InputDecoration(
+                        labelText: "Select Day",
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 10),
 

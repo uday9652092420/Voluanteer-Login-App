@@ -168,8 +168,6 @@ class DashboardController extends GetxController {
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
 
-        allowedDays.clear();
-
         /// API RESPONSE:
         /// { "days": ["day1"] }
 
@@ -425,8 +423,6 @@ class DashboardController extends GetxController {
     reasonController.clear();
     receivedController.clear();
 
-    /// keep defaults
-    selectedDay.value = "day1";
     bookingType.value = "Matloob";
     animalType.value = "Big";
     amountType.value = "Local";

@@ -61,6 +61,18 @@ class DashboardController extends GetxController {
   final reasonController = TextEditingController();
   final receivedController = TextEditingController();
 
+  final updateDateController = TextEditingController();
+
+  final updateTotalController = TextEditingController();
+
+  final updateSlaughteredController = TextEditingController();
+
+  final updateRemainingController = TextEditingController();
+
+  final supervisorController = TextEditingController();
+
+  final remarksController = TextEditingController();
+
   final box = GetStorage();
 
   @override
@@ -452,6 +464,113 @@ class DashboardController extends GetxController {
     }
   }
 
+  void calculateRemaining() {
+    int total = int.tryParse(updateTotalController.text) ?? 0;
+
+    int slaughtered = int.tryParse(updateSlaughteredController.text) ?? 0;
+
+    int remaining = total - slaughtered;
+
+    if (remaining < 0) {
+      remaining = 0;
+    }
+
+    updateRemainingController.text = remaining.toString();
+  }
+
+  /// CREATE DAY WISE UPDATE
+  Future<void> createDayWiseUpdate() async {
+    try {
+      final token = box.read("token");
+
+      /// VALIDATIONS
+
+      if (selectedUpdateCentreId.value == null) {
+        Get.snackbar("Error", "Please select centre");
+        return;
+      }
+
+      if (updateSelectedDay.value == null) {
+        Get.snackbar("Error", "Please select day");
+        return;
+      }
+
+      if (updateAnimalType.value == null) {
+        Get.snackbar("Error", "Please select animal type");
+        return;
+      }
+
+      if (updateDateController.text.trim().isEmpty) {
+        Get.snackbar("Error", "Please select date");
+        return;
+      }
+
+      if (updateTotalController.text.trim().isEmpty) {
+        Get.snackbar("Error", "Please enter total");
+        return;
+      }
+
+      if (updateSlaughteredController.text.trim().isEmpty) {
+        Get.snackbar("Error", "Please enter slaughtered");
+        return;
+      }
+
+      if (supervisorController.text.trim().isEmpty) {
+        Get.snackbar("Error", "Please enter supervisor");
+        return;
+      }
+
+      final response = await http.post(
+        Uri.parse("http://192.168.1.230:3002/api/qurbani-day-wise-updates"),
+
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+
+        body: jsonEncode({
+          "centreId": selectedUpdateCentreId.value,
+
+          "day": updateSelectedDay.value,
+
+          "animalType": updateAnimalType.value,
+
+          "totalAnimals": int.tryParse(updateTotalController.text) ?? 0,
+
+          "totalBookings": int.tryParse(updateTotalController.text) ?? 0,
+
+          "availableSlots": int.tryParse(updateRemainingController.text) ?? 0,
+
+          "slaughtered": int.tryParse(updateSlaughteredController.text) ?? 0,
+
+          "remaining": int.tryParse(updateRemainingController.text) ?? 0,
+
+          "supervisor": supervisorController.text,
+
+          "notes": null,
+
+          "remarks": remarksController.text,
+        }),
+      );
+
+      print(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Get.snackbar("Success", "Update Created");
+
+        clearUpdateForm();
+
+        Get.back();
+      } else {
+        Get.snackbar("Error", "Failed to create update");
+      }
+    } catch (e) {
+      print("CREATE UPDATE ERROR: $e");
+
+      Get.snackbar("Error", "Something went wrong");
+    }
+  }
+
   void clearForm() {
     hissasController.clear();
     amountTypeController.clear();
@@ -475,5 +594,14 @@ class DashboardController extends GetxController {
     selectedUpdateCentreId.value = null;
     updateSelectedDay.value = null;
     updateAnimalType.value = null;
+    updateDateController.clear();
+    updateTotalController.clear();
+
+    updateSlaughteredController.clear();
+
+    updateRemainingController.clear();
+    supervisorController.clear();
+
+    remarksController.clear();
   }
 }

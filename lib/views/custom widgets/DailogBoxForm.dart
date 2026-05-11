@@ -141,39 +141,70 @@ class Dailogboxform extends GetView<DashboardController> {
 
               /// DATE
               TextField(
+                controller: controller.updateDateController,
+                readOnly: true,
+
                 decoration: InputDecoration(
                   labelText: "Centre & Date *",
                   border: const OutlineInputBorder(),
-                  hintText:
-                      "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
+                  hintText: "Select Date",
                   suffixIcon: const Icon(Icons.calendar_today),
                 ),
+
+                onTap: () async {
+                  DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2024),
+                    lastDate: DateTime(2100),
+                  );
+
+                  if (pickedDate != null) {
+                    controller.updateDateController.text =
+                        "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+                  }
+                },
               ),
 
               const SizedBox(height: 18),
 
               /// TOTAL
               TextField(
+                controller: controller.updateTotalController,
+                keyboardType: TextInputType.number,
+
                 decoration: const InputDecoration(
                   labelText: "Total *",
                   border: OutlineInputBorder(),
                 ),
-              ),
 
+                onChanged: (v) {
+                  controller.calculateRemaining();
+                },
+              ),
               const SizedBox(height: 18),
 
               /// ANIMALS SLAUGHTERED
               TextField(
+                controller: controller.updateSlaughteredController,
+                keyboardType: TextInputType.number,
+
                 decoration: const InputDecoration(
                   labelText: "Animals Slaughtered",
                   border: OutlineInputBorder(),
                 ),
-              ),
 
+                onChanged: (v) {
+                  controller.calculateRemaining();
+                },
+              ),
               const SizedBox(height: 18),
 
               /// REMAINING
               TextField(
+                controller: controller.updateRemainingController,
+                readOnly: true,
+
                 decoration: const InputDecoration(
                   labelText: "Remaining (Auto)",
                   border: OutlineInputBorder(),
@@ -184,6 +215,9 @@ class Dailogboxform extends GetView<DashboardController> {
 
               /// SUPERVISOR
               TextField(
+                controller: controller.supervisorController,
+                keyboardType: TextInputType.text,
+
                 decoration: const InputDecoration(
                   labelText: "Supervisor",
                   hintText: "Letters and spaces only",
@@ -195,7 +229,10 @@ class Dailogboxform extends GetView<DashboardController> {
 
               /// REMARKS
               TextField(
+                controller: controller.remarksController,
+                keyboardType: TextInputType.text,
                 maxLines: 5,
+
                 decoration: const InputDecoration(
                   labelText: "Remarks",
                   hintText: "Letters and spaces only",
@@ -228,7 +265,10 @@ class Dailogboxform extends GetView<DashboardController> {
                       ),
                     ),
 
-                    onPressed: () {},
+                    onPressed: () async {
+                      await controller.createDayWiseUpdate();
+                      Get.back();
+                    },
 
                     icon: const Icon(Icons.save, color: Colors.white),
 

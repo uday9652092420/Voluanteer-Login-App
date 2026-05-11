@@ -142,6 +142,8 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   void _showDailogBoxForm(BuildContext context) {
+    /// FETCH ALL CENTRES
+
     showDialog(context: context, builder: (_) => const Dailogboxform());
   }
 

@@ -11,13 +11,17 @@ class Dailogboxform extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     final c = controller;
 
+    /// FETCH ALL CENTRES
+    c.fetchUpdateCentres();
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+
       child: Container(
-        width: 850,
+        width: 500,
         padding: const EdgeInsets.all(20),
-        child: Obx(
-          () => Column(
+
+        child: SingleChildScrollView(
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               /// HEADER
@@ -26,199 +30,172 @@ class Dailogboxform extends GetView<DashboardController> {
                 children: [
                   const Text(
                     "Add Update",
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
                   ),
 
                   IconButton(
                     onPressed: () {
                       Get.back();
+                      controller.clearUpdateForm();
                     },
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(
+                      Icons.close,
+                      color: AppColors.error,
+                      size: 28,
+                    ),
                   ),
                 ],
               ),
 
-              const Divider(),
+              const Divider(height: 30),
 
-              const SizedBox(height: 15),
+              /// CENTRE
+              Obx(
+                () => DropdownButtonFormField<String?>(
+                  value: controller.selectedUpdateCentreId.value,
 
-              /// ROW 1
-              Row(
-                children: [
-                  /// CENTRE
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: c.selectedCentreId.value.isEmpty
-                          ? null
-                          : c.selectedCentreId.value,
+                  decoration: InputDecoration(
+                    labelText: "Select Centre",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
 
-                      decoration: const InputDecoration(
-                        labelText: "Centre *",
-                        border: OutlineInputBorder(),
-                      ),
+                  hint: const Text("Select Centre"),
 
-                      items: c.centres.map<DropdownMenuItem<String>>((e) {
-                        return DropdownMenuItem<String>(
+                  items: controller.updateCentres
+                      .map<DropdownMenuItem<String?>>((e) {
+                        return DropdownMenuItem<String?>(
                           value: e["id"].toString(),
                           child: Text(e["name"].toString()),
                         );
-                      }).toList(),
+                      })
+                      .toList(),
 
-                      onChanged: null,
+                  onChanged: (v) {
+                    controller.selectedUpdateCentreId.value = v;
+                  },
+                ),
+              ),
+              const SizedBox(height: 18),
+              Obx(
+                () => DropdownButtonFormField<String?>(
+                  value: controller.updateSelectedDay.value,
+
+                  decoration: InputDecoration(
+                    labelText: "Select Day",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
 
-                  const SizedBox(width: 15),
+                  hint: const Text("Select Day"),
 
-                  /// DAY
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: c.allowedDays.contains(c.selectedDay.value)
-                          ? c.selectedDay.value
-                          : null,
+                  items: controller.updateDays.map<DropdownMenuItem<String?>>((
+                    day,
+                  ) {
+                    return DropdownMenuItem<String?>(
+                      value: day,
+                      child: Text(day),
+                    );
+                  }).toList(),
 
-                      decoration: const InputDecoration(
-                        labelText: "Day",
-                        border: OutlineInputBorder(),
-                      ),
+                  onChanged: (v) {
+                    controller.updateSelectedDay.value = v;
+                  },
+                ),
+              ),
+              const SizedBox(height: 18),
+              Obx(
+                () => DropdownButtonFormField<String?>(
+                  value: controller.updateAnimalType.value,
 
-                      items: c.allowedDays
-                          .map(
-                            (e) => DropdownMenuItem<String>(
-                              value: e,
-                              child: Text(e),
-                            ),
-                          )
-                          .toList(),
-
-                      onChanged: (v) {
-                        if (v != null) {
-                          c.selectedDay.value = v;
-                        }
-                      },
+                  decoration: InputDecoration(
+                    labelText: "Select Animal Type",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
 
-                  const SizedBox(width: 15),
+                  hint: const Text("Select Animal Type"),
 
-                  /// ANIMAL TYPE
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: c.animalType.value,
+                  items: ["Big", "Small"]
+                      .map<DropdownMenuItem<String?>>(
+                        (type) => DropdownMenuItem<String?>(
+                          value: type,
+                          child: Text(type),
+                        ),
+                      )
+                      .toList(),
 
-                      decoration: const InputDecoration(
-                        labelText: "Animal Type",
-                        border: OutlineInputBorder(),
-                      ),
+                  onChanged: (v) {
+                    controller.updateAnimalType.value = v;
+                  },
+                ),
+              ),
+              const SizedBox(height: 18),
 
-                      items: ["Big", "Small"]
-                          .map(
-                            (e) => DropdownMenuItem<String>(
-                              value: e,
-                              child: Text(e),
-                            ),
-                          )
-                          .toList(),
-
-                      onChanged: (v) {
-                        c.animalType.value = v!;
-                        c.recalculate();
-                      },
-                    ),
-                  ),
-                ],
+              /// DATE
+              TextField(
+                decoration: InputDecoration(
+                  labelText: "Centre & Date *",
+                  border: const OutlineInputBorder(),
+                  hintText:
+                      "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
+                  suffixIcon: const Icon(Icons.calendar_today),
+                ),
               ),
 
-              const SizedBox(height: 15),
+              const SizedBox(height: 18),
 
-              /// ROW 2
-              Row(
-                children: [
-                  /// DATE
-                  Expanded(
-                    child: TextField(
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: "Centre & Date *",
-                        border: const OutlineInputBorder(),
-                        hintText:
-                            "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
-                        suffixIcon: const Icon(Icons.calendar_month),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 15),
-
-                  /// TOTAL
-                  Expanded(
-                    child: TextField(
-                      controller: c.hissasController,
-                      keyboardType: TextInputType.number,
-                      onChanged: (_) => c.recalculate(),
-                      decoration: const InputDecoration(
-                        labelText: "Total *",
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 15),
-
-                  /// ANIMALS SLAUGHTERED
-                  Expanded(
-                    child: TextField(
-                      controller: c.animalCountController,
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        labelText: "Animals Slaughtered",
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                ],
+              /// TOTAL
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: "Total *",
+                  border: OutlineInputBorder(),
+                ),
               ),
 
-              const SizedBox(height: 15),
+              const SizedBox(height: 18),
 
-              /// ROW 3
-              Row(
-                children: [
-                  /// REMAINING
-                  Expanded(
-                    child: TextField(
-                      controller: c.perDayCapacityController,
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        labelText: "Remaining (Auto)",
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 15),
-
-                  /// SUPERVISOR
-                  Expanded(
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        labelText: "Supervisor",
-                        hintText: "Letters and spaces only",
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-
-                  const Spacer(),
-                ],
+              /// ANIMALS SLAUGHTERED
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: "Animals Slaughtered",
+                  border: OutlineInputBorder(),
+                ),
               ),
 
-              const SizedBox(height: 15),
+              const SizedBox(height: 18),
+
+              /// REMAINING
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: "Remaining (Auto)",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
+              /// SUPERVISOR
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: "Supervisor",
+                  hintText: "Letters and spaces only",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+
+              const SizedBox(height: 18),
 
               /// REMARKS
               TextField(
-                controller: c.reasonController,
-                maxLines: 4,
+                maxLines: 5,
                 decoration: const InputDecoration(
                   labelText: "Remarks",
                   hintText: "Letters and spaces only",
@@ -235,30 +212,32 @@ class Dailogboxform extends GetView<DashboardController> {
                   OutlinedButton(
                     onPressed: () {
                       Get.back();
+                      controller.clearUpdateForm();
                     },
                     child: const Text("Cancel"),
                   ),
 
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 15),
 
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
+                        horizontal: 22,
                         vertical: 15,
                       ),
                     ),
 
-                    onPressed: () async {
-                      await c.createBooking();
-                    },
+                    onPressed: () {},
 
                     icon: const Icon(Icons.save, color: Colors.white),
 
                     label: const Text(
                       "Submit",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

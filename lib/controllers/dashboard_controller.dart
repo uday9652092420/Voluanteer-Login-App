@@ -36,6 +36,21 @@ class DashboardController extends GetxController {
   /// volunteer allocated days
   var allowedDays = <String>[].obs;
 
+  /// ADD UPDATE PAGE DATA
+
+  var updateCentres = [].obs;
+
+  /// default empty -> shows label/hint
+  var selectedUpdateCentreId = Rx<String?>(null);
+
+  /// default empty -> shows label/hint
+  var updateSelectedDay = Rx<String?>(null);
+
+  List<String> updateDays = ["day1", "day2", "day3"];
+
+  /// Animal Type Dropdown
+  var updateAnimalType = Rx<String?>(null);
+
   /// 🔹 CONTROLLERS
   final hissasController = TextEditingController();
   final animalCountController = TextEditingController();
@@ -414,6 +429,29 @@ class DashboardController extends GetxController {
     }
   }
 
+  /// ADD UPDATE PAGE CENTRES
+  Future<void> fetchUpdateCentres() async {
+    try {
+      final token = box.read("token");
+
+      final res = await http.get(
+        Uri.parse("http://192.168.1.230:3002/api/qurbani-booking-centres"),
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+
+        updateCentres.value = data;
+
+        /// keep empty initially
+        selectedUpdateCentreId.value = null;
+      }
+    } catch (e) {
+      print("Update centres error: $e");
+    }
+  }
+
   void clearForm() {
     hissasController.clear();
     amountTypeController.clear();
@@ -429,5 +467,13 @@ class DashboardController extends GetxController {
 
     /// refresh counts
     recalculate();
+  }
+
+  /// CLEAR ADD UPDATE FORM
+  void clearUpdateForm() {
+    /// clear dropdowns
+    selectedUpdateCentreId.value = null;
+    updateSelectedDay.value = null;
+    updateAnimalType.value = null;
   }
 }

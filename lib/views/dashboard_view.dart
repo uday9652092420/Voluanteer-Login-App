@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:login_app/themes/app_theme.dart';
 import '../controllers/dashboard_controller.dart';
+import 'custom widgets/DailogBoxForm.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
@@ -22,17 +23,43 @@ class DashboardView extends GetView<DashboardController> {
 
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 50),
-        child: FloatingActionButton.extended(
-          onPressed: () => _showBookingDialog(context),
-          backgroundColor: AppColors.primary,
-          icon: const Icon(Icons.add, color: AppColors.white),
-          label: const Text(
-            "New Counter Slot Booking",
-            style: TextStyle(
-              color: AppColors.white,
-              fontWeight: FontWeight.bold,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            /// FIRST BUTTON
+            FloatingActionButton.extended(
+              onPressed: () => _showBookingDialog(context),
+              backgroundColor: AppColors.primary,
+              icon: const Icon(Icons.add, color: AppColors.white),
+              label: const Text(
+                "New Counter Slot Booking",
+                style: TextStyle(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-          ),
+
+            const SizedBox(height: 12),
+
+            /// SECOND BUTTON
+            /// SECOND BUTTON
+            FloatingActionButton.extended(
+              onPressed: () => _showDailogBoxForm(context),
+
+              backgroundColor: AppColors.primary,
+
+              icon: const Icon(Icons.add, color: Colors.white),
+
+              label: const Text(
+                "Add Update",
+                style: TextStyle(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
 
@@ -112,6 +139,10 @@ class DashboardView extends GetView<DashboardController> {
         ),
       ),
     );
+  }
+
+  void _showDailogBoxForm(BuildContext context) {
+    showDialog(context: context, builder: (_) => const Dailogboxform());
   }
 
   void _showBookingDialog(BuildContext context) {

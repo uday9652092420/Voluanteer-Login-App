@@ -37,7 +37,8 @@ class DashboardController extends GetxController {
   var allowedDays = <String>[].obs;
 
   /// ADD UPDATE PAGE DATA
-
+  /// UPDATE PAGE CENTRE NAME
+  var updateCentreName = "".obs;
   var updateCentres = [].obs;
 
   /// default empty -> shows label/hint
@@ -45,6 +46,8 @@ class DashboardController extends GetxController {
 
   /// default empty -> shows label/hint
   var updateSelectedDay = Rx<String?>(null);
+
+  var updateAllowedDays = <String>[].obs;
 
   List<String> updateDays = ["day1", "day2", "day3"];
 
@@ -441,26 +444,77 @@ class DashboardController extends GetxController {
     }
   }
 
-  /// ADD UPDATE PAGE CENTRES
   Future<void> fetchUpdateCentres() async {
     try {
       final token = box.read("token");
 
-      final res = await http.get(
-        Uri.parse("http://192.168.1.230:3002/api/qurbani-booking-centres"),
+      final volunteer = box.read("volunteer");
+
+      if (volunteer == null) return;
+
+      final centreId = volunteer["assignedCentreId"];
+
+      final response = await http.get(
+        Uri.parse(
+          "http://192.168.1.230:3002/api/qurbani-booking-centres/$centreId",
+        ),
         headers: {"Authorization": "Bearer $token"},
       );
+
+      print("UPDATE STATUS: ${response.statusCode}");
+      print("UPDATE BODY: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        /// save centre id
+        selectedUpdateCentreId.value = data["id"].toString();
+
+        /// save centre name
+        updateCentreName.value = data["name"].toString();
+      }
+    } catch (e) {
+      print("Update centre error: $e");
+    }
+  }
+
+  Future<void> fetchUpdateAllowedDays() async {
+    try {
+      final token = box.read("token");
+
+      final volunteer = box.read("volunteer");
+
+      if (volunteer == null) {
+        print("Volunteer not found");
+        return;
+      }
+
+      final username = volunteer["username"];
+
+      final res = await http.get(
+        Uri.parse(
+          "http://192.168.1.230:3002/api/qurbani-volunteers/volunteer-days/$username",
+        ),
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      print("UPDATE DAYS STATUS: ${res.statusCode}");
+      print("UPDATE DAYS BODY: ${res.body}");
 
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
 
-        updateCentres.value = data;
+        if (data["days"] != null) {
+          updateAllowedDays.value = List<String>.from(data["days"]);
+        }
 
-        /// keep empty initially
-        selectedUpdateCentreId.value = null;
+        /// auto select first allowed day
+        if (updateAllowedDays.isNotEmpty) {
+          updateSelectedDay.value = updateAllowedDays.first;
+        }
       }
     } catch (e) {
-      print("Update centres error: $e");
+      print("Update allowed days error: $e");
     }
   }
 
@@ -479,7 +533,7 @@ class DashboardController extends GetxController {
   }
 
   /// CREATE DAY WISE UPDATE
-  Future<void> createDayWiseUpdate() async {
+  Future<bool> createDayWiseUpdate() async {
     try {
       final token = box.read("token");
 
@@ -487,37 +541,37 @@ class DashboardController extends GetxController {
 
       if (selectedUpdateCentreId.value == null) {
         Get.snackbar("Error", "Please select centre");
-        return;
+        return false;
       }
 
       if (updateSelectedDay.value == null) {
         Get.snackbar("Error", "Please select day");
-        return;
+        return false;
       }
 
       if (updateAnimalType.value == null) {
         Get.snackbar("Error", "Please select animal type");
-        return;
+        return false;
       }
 
       if (updateDateController.text.trim().isEmpty) {
         Get.snackbar("Error", "Please select date");
-        return;
+        return false;
       }
 
       if (updateTotalController.text.trim().isEmpty) {
         Get.snackbar("Error", "Please enter total");
-        return;
+        return false;
       }
 
       if (updateSlaughteredController.text.trim().isEmpty) {
         Get.snackbar("Error", "Please enter slaughtered");
-        return;
+        return false;
       }
 
       if (supervisorController.text.trim().isEmpty) {
         Get.snackbar("Error", "Please enter supervisor");
-        return;
+        return false;
       }
 
       final response = await http.post(
@@ -530,28 +584,20 @@ class DashboardController extends GetxController {
 
         body: jsonEncode({
           "centreId": selectedUpdateCentreId.value,
-
           "day": updateSelectedDay.value,
-
           "animalType": updateAnimalType.value,
-
           "totalAnimals": int.tryParse(updateTotalController.text) ?? 0,
-
           "totalBookings": int.tryParse(updateTotalController.text) ?? 0,
-
           "availableSlots": int.tryParse(updateRemainingController.text) ?? 0,
-
           "slaughtered": int.tryParse(updateSlaughteredController.text) ?? 0,
-
           "remaining": int.tryParse(updateRemainingController.text) ?? 0,
-
           "supervisor": supervisorController.text,
-
           "notes": null,
-
           "remarks": remarksController.text,
         }),
       );
+      print("STATUS CODE: ${response.statusCode}");
+      print("BODY: ${response.body}");
 
       print(response.body);
 
@@ -559,15 +605,19 @@ class DashboardController extends GetxController {
         Get.snackbar("Success", "Update Created");
 
         clearUpdateForm();
+        //Get.back();
 
-        Get.back();
+        return true;
       } else {
         Get.snackbar("Error", "Failed to create update");
+        return false;
       }
     } catch (e) {
       print("CREATE UPDATE ERROR: $e");
 
       Get.snackbar("Error", "Something went wrong");
+
+      return false;
     }
   }
 

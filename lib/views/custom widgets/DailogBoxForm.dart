@@ -9,10 +9,6 @@ class Dailogboxform extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    final c = controller;
-
-    /// FETCH ALL CENTRES
-    c.fetchUpdateCentres();
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
 
@@ -55,35 +51,25 @@ class Dailogboxform extends GetView<DashboardController> {
 
               /// CENTRE
               Obx(
-                () => DropdownButtonFormField<String?>(
-                  value: controller.selectedUpdateCentreId.value,
+                () => TextFormField(
+                  readOnly: true,
+
+                  controller: TextEditingController(
+                    text: controller.updateCentreName.value,
+                  ),
 
                   decoration: InputDecoration(
-                    labelText: "Select Centre",
+                    labelText: "Centre",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-
-                  hint: const Text("Select Centre"),
-
-                  items: controller.updateCentres
-                      .map<DropdownMenuItem<String?>>((e) {
-                        return DropdownMenuItem<String?>(
-                          value: e["id"].toString(),
-                          child: Text(e["name"].toString()),
-                        );
-                      })
-                      .toList(),
-
-                  onChanged: (v) {
-                    controller.selectedUpdateCentreId.value = v;
-                  },
                 ),
               ),
+
               const SizedBox(height: 18),
               Obx(
-                () => DropdownButtonFormField<String?>(
+                () => DropdownButtonFormField<String>(
                   value: controller.updateSelectedDay.value,
 
                   decoration: InputDecoration(
@@ -93,14 +79,10 @@ class Dailogboxform extends GetView<DashboardController> {
                     ),
                   ),
 
-                  hint: const Text("Select Day"),
-
-                  items: controller.updateDays.map<DropdownMenuItem<String?>>((
-                    day,
-                  ) {
-                    return DropdownMenuItem<String?>(
+                  items: controller.updateAllowedDays.map((day) {
+                    return DropdownMenuItem<String>(
                       value: day,
-                      child: Text(day),
+                      child: Text(day.toUpperCase()),
                     );
                   }).toList(),
 
@@ -112,7 +94,7 @@ class Dailogboxform extends GetView<DashboardController> {
               const SizedBox(height: 18),
               Obx(
                 () => DropdownButtonFormField<String?>(
-                  value: controller.updateAnimalType.value,
+                  initialValue: controller.updateAnimalType.value,
 
                   decoration: InputDecoration(
                     labelText: "Select Animal Type",
@@ -264,12 +246,24 @@ class Dailogboxform extends GetView<DashboardController> {
                         vertical: 15,
                       ),
                     ),
-
                     onPressed: () async {
-                      await controller.createDayWiseUpdate();
-                      Get.back();
-                    },
+                      bool success = await controller.createDayWiseUpdate();
 
+                      print("SUCCESS VALUE: $success");
+
+                      if (success) {
+                        Get.back();
+                      }
+                    },
+                    // onPressed: () async {
+                    //   bool success = await controller.createDayWiseUpdate();
+
+                    //   print("SUCCESS VALUE: $success");
+
+                    //   if(success) {
+                    //     Get.back();
+                    //   }
+                    // },
                     icon: const Icon(Icons.save, color: Colors.white),
 
                     label: const Text(

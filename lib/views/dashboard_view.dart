@@ -52,7 +52,7 @@ class DashboardView extends GetView<DashboardController> {
               icon: const Icon(Icons.add, color: Colors.white),
 
               label: const Text(
-                "Add Update",
+                "Add Day Wise Qurbani Update",
                 style: TextStyle(
                   color: AppColors.white,
                   fontWeight: FontWeight.bold,
@@ -142,9 +142,11 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   void _showDailogBoxForm(BuildContext context) {
-    /// FETCH ALL CENTRES
+    final controller = Get.find<DashboardController>();
 
-    showDialog(context: context, builder: (_) => const Dailogboxform());
+    controller.fetchUpdateCentres();
+
+    Get.dialog(const Dailogboxform());
   }
 
   void _showBookingDialog(BuildContext context) {
@@ -189,7 +191,7 @@ class DashboardView extends GetView<DashboardController> {
                   const SizedBox(height: 10),
                   Obx(
                     () => DropdownButtonFormField<String>(
-                      value: c.selectedCentreId.value.isEmpty
+                      initialValue: c.selectedCentreId.value.isEmpty
                           ? null
                           : c.selectedCentreId.value,
 
@@ -207,7 +209,7 @@ class DashboardView extends GetView<DashboardController> {
                   // DAY DROPDOWN
                   Obx(
                     () => DropdownButtonFormField<String>(
-                      value: c.allowedDays.contains(c.selectedDay.value)
+                      initialValue: c.allowedDays.contains(c.selectedDay.value)
                           ? c.selectedDay.value
                           : null,
 
@@ -237,7 +239,7 @@ class DashboardView extends GetView<DashboardController> {
 
                   // BOOKING TYPE DROPDOWN
                   DropdownButtonFormField(
-                    value: c.bookingType.value.isEmpty
+                    initialValue: c.bookingType.value.isEmpty
                         ? null
                         : c.bookingType.value,
                     items: ["Matloob", "Waqf (Hyderabad)", "Waqf"]
@@ -251,7 +253,7 @@ class DashboardView extends GetView<DashboardController> {
                   const SizedBox(height: 10),
                   // ANIMAL TYPE DROPDOWN
                   DropdownButtonFormField(
-                    value: c.animalType.value.isEmpty
+                    initialValue: c.animalType.value.isEmpty
                         ? null
                         : c.animalType.value,
                     items: ["Big", "Small"]
@@ -285,7 +287,7 @@ class DashboardView extends GetView<DashboardController> {
                   const SizedBox(height: 15),
                   //amount type
                   DropdownButtonFormField(
-                    value: c.amountType.value.isEmpty
+                    initialValue: c.amountType.value.isEmpty
                         ? null
                         : c.amountType.value,
                     items: ["Local", "Out-of-State"]

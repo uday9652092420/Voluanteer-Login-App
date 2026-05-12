@@ -87,6 +87,7 @@ class DashboardController extends GetxController {
 
     /// default values automatically
     fetchVolunteerDays();
+    fetchUpdateAllowedDays();
 
     bookingType.value = "Matloob";
     animalType.value = "Big";
@@ -641,8 +642,8 @@ class DashboardController extends GetxController {
   /// CLEAR ADD UPDATE FORM
   void clearUpdateForm() {
     /// clear dropdowns
-    selectedUpdateCentreId.value = null;
-    updateSelectedDay.value = null;
+    // selectedUpdateCentreId.value = null;
+    // updateSelectedDay.value = null;
     updateAnimalType.value = null;
     updateDateController.clear();
     updateTotalController.clear();

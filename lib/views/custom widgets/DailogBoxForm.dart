@@ -25,7 +25,7 @@ class Dailogboxform extends GetView<DashboardController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Add Update",
+                    "Add Qurbani Update",
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,

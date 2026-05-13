@@ -121,31 +121,16 @@ class Dailogboxform extends GetView<DashboardController> {
               ),
               const SizedBox(height: 18),
 
-              /// DATE
-              TextField(
+              TextFormField(
                 controller: controller.updateDateController,
                 readOnly: true,
 
                 decoration: InputDecoration(
-                  labelText: "Centre & Date *",
-                  border: const OutlineInputBorder(),
-                  hintText: "Select Date",
-                  suffixIcon: const Icon(Icons.calendar_today),
+                  labelText: "Date",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2024),
-                    lastDate: DateTime(2100),
-                  );
-
-                  if (pickedDate != null) {
-                    controller.updateDateController.text =
-                        "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-                  }
-                },
               ),
 
               const SizedBox(height: 18),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 
 import '../models/booking_model.dart';
 
@@ -89,6 +90,7 @@ class DashboardController extends GetxController {
     fetchVolunteerDays();
     fetchUpdateAllowedDays();
 
+    updateDateController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
     bookingType.value = "Matloob";
     animalType.value = "Big";
     amountType.value = "Local";
@@ -645,7 +647,7 @@ class DashboardController extends GetxController {
     // selectedUpdateCentreId.value = null;
     // updateSelectedDay.value = null;
     updateAnimalType.value = null;
-    updateDateController.clear();
+
     updateTotalController.clear();
 
     updateSlaughteredController.clear();

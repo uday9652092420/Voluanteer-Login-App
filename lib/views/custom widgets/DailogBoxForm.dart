@@ -92,9 +92,10 @@ class Dailogboxform extends GetView<DashboardController> {
                 ),
               ),
               const SizedBox(height: 18),
+              //select animal type
               Obx(
-                () => DropdownButtonFormField<String?>(
-                  initialValue: controller.updateAnimalType.value,
+                () => DropdownButtonFormField<String>(
+                  value: controller.updateAnimalType.value,
 
                   decoration: InputDecoration(
                     labelText: "Select Animal Type",
@@ -103,19 +104,18 @@ class Dailogboxform extends GetView<DashboardController> {
                     ),
                   ),
 
-                  hint: const Text("Select Animal Type"),
-
-                  items: ["Big", "Small"]
-                      .map<DropdownMenuItem<String?>>(
-                        (type) => DropdownMenuItem<String?>(
-                          value: type,
-                          child: Text(type),
-                        ),
-                      )
-                      .toList(),
+                  items: ["Big", "Small"].map((type) {
+                    return DropdownMenuItem<String>(
+                      value: type,
+                      child: Text(type),
+                    );
+                  }).toList(),
 
                   onChanged: (v) {
                     controller.updateAnimalType.value = v;
+
+                    /// AUTO FILL TOTAL
+                    controller.setTotalByAnimalType();
                   },
                 ),
               ),

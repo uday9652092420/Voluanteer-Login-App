@@ -535,6 +535,37 @@ class DashboardController extends GetxController {
     updateRemainingController.text = remaining.toString();
   }
 
+  /// AUTO SET TOTAL BASED ON ANIMAL TYPE
+  void setTotalByAnimalType() {
+    try {
+      if (rates.isEmpty) return;
+
+      /// find selected animal type from API
+      var selectedRate = rates.firstWhereOrNull(
+        (r) =>
+            r["animalType"].toString().toLowerCase() ==
+            updateAnimalType.value.toString().toLowerCase(),
+      );
+
+      if (selectedRate == null) {
+        updateTotalController.text = "0";
+        return;
+      }
+
+      /// get total capacity from API
+      int totalCapacity =
+          int.tryParse(selectedRate["totalCapacity"].toString()) ?? 0;
+
+      /// display in total field
+      updateTotalController.text = totalCapacity.toString();
+
+      /// auto calculate remaining also
+      calculateRemaining();
+    } catch (e) {
+      print("SET TOTAL ERROR: $e");
+    }
+  }
+
   /// CREATE DAY WISE UPDATE
   Future<bool> createDayWiseUpdate() async {
     try {

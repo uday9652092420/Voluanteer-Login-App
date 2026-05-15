@@ -109,6 +109,9 @@ class DashboardController extends GetxController {
         Uri.parse(
           "http://192.168.1.230:3002/api/qurbani-counter-slot-bookings",
         ),
+        // Uri.parse(
+        //   "http://109.199.106.107:3000/api/qurbani-counter-slot-bookings",
+        // ),
         headers: {"Authorization": "Bearer $token"},
       );
 
@@ -151,6 +154,9 @@ class DashboardController extends GetxController {
         Uri.parse(
           "http://192.168.1.230:3002/api/qurbani-booking-centres/$centreId",
         ),
+        // Uri.parse(
+        //   "http://109.199.106.107:3000/api/qurbani-booking-centres/$centreId",
+        // ),
         headers: {"Authorization": "Bearer $token"},
       );
 
@@ -192,6 +198,9 @@ class DashboardController extends GetxController {
         Uri.parse(
           "http://192.168.1.230:3002/api/qurbani-volunteers/volunteer-days/$username",
         ),
+        // Uri.parse(
+        //   "http://109.199.106.107:3000/api/qurbani-volunteers/volunteer-days/$username",
+        // ),
         headers: {"Authorization": "Bearer $token"},
       );
 
@@ -226,6 +235,7 @@ class DashboardController extends GetxController {
 
     final res = await http.get(
       Uri.parse("http://192.168.1.230:3002/api/qurbani-hissa-rates"),
+      // Uri.parse("http://109.199.106.107:3000/api/qurbani-hissa-rates"),
       headers: {"Authorization": "Bearer $token"},
     );
 
@@ -374,6 +384,9 @@ class DashboardController extends GetxController {
         Uri.parse(
           "http://192.168.1.230:3002/api/qurbani-counter-slot-bookings/next-receipt-preview",
         ),
+        // Uri.parse(
+        //   "http://109.199.106.107:3000/api/qurbani-counter-slot-bookings/next-receipt-preview",
+        // ),
         headers: {"Authorization": "Bearer $token"},
       );
 
@@ -416,6 +429,9 @@ class DashboardController extends GetxController {
         Uri.parse(
           "http://192.168.1.230:3002/api/qurbani-counter-slot-bookings",
         ),
+        // Uri.parse(
+        //   "http://109.199.106.107:3000/api/qurbani-counter-slot-bookings",
+        // ),
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json",
@@ -461,6 +477,9 @@ class DashboardController extends GetxController {
         Uri.parse(
           "http://192.168.1.230:3002/api/qurbani-booking-centres/$centreId",
         ),
+        // Uri.parse(
+        //   "http://109.199.106.107:3000/api/qurbani-booking-centres/$centreId",
+        // ),
         headers: {"Authorization": "Bearer $token"},
       );
 
@@ -498,6 +517,9 @@ class DashboardController extends GetxController {
         Uri.parse(
           "http://192.168.1.230:3002/api/qurbani-volunteers/volunteer-days/$username",
         ),
+        // Uri.parse(
+        //   "http://109.199.106.107:3000/api/qurbani-volunteers/volunteer-days/$username",
+        // ),
         headers: {"Authorization": "Bearer $token"},
       );
 
@@ -522,9 +544,10 @@ class DashboardController extends GetxController {
   }
 
   void calculateRemaining() {
-    int total = int.tryParse(updateTotalController.text) ?? 0;
+    int total = int.tryParse(updateTotalController.text.trim()) ?? 0;
 
-    int slaughtered = int.tryParse(updateSlaughteredController.text) ?? 0;
+    int slaughtered =
+        int.tryParse(updateSlaughteredController.text.trim()) ?? 0;
 
     int remaining = total - slaughtered;
 
@@ -566,17 +589,61 @@ class DashboardController extends GetxController {
     }
   }
 
+  Future<void> fetchDayAnimalData() async {
+    try {
+      final token = box.read("token");
+
+      if (updateAnimalType.value == null) {
+        return;
+      }
+
+      String animal = updateAnimalType.value!.toLowerCase();
+
+      final response = await http.get(
+        Uri.parse(
+          "http://192.168.1.230:3002/api/qurbani-day-wise-updates/overall-data/by-day-animal?animalType=$animal",
+        ),
+        // Uri.parse(
+        //   "http://109.199.106.107:3000/api/qurbani-day-wise-updates/overall-data/by-day-animal?animalType=$animal",
+        // ),
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      print("FETCH STATUS: ${response.statusCode}");
+      print("FETCH BODY: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        /// AUTO FILL
+        updateTotalController.text = data["totalAnimals"]?.toString() ?? "0";
+
+        updateSlaughteredController.text =
+            data["animalsSlaughtered"]?.toString() ?? "0";
+
+        supervisorController.text = data["supervisor"]?.toString() ?? "";
+
+        remarksController.text = data["remarks"]?.toString() ?? "";
+
+        /// AUTO CALCULATE REMAINING
+        calculateRemaining();
+      }
+    } catch (e) {
+      print("FETCH ERROR: $e");
+    }
+  }
+
   /// CREATE DAY WISE UPDATE
   Future<bool> createDayWiseUpdate() async {
     try {
       final token = box.read("token");
 
-      /// VALIDATIONS
+      // VALIDATIONS
 
-      if (selectedUpdateCentreId.value == null) {
-        Get.snackbar("Error", "Please select centre");
-        return false;
-      }
+      // if (selectedUpdateCentreId.value == null) {
+      //   Get.snackbar("Error", "Please select centre");
+      //   return false;
+      // }
 
       if (updateSelectedDay.value == null) {
         Get.snackbar("Error", "Please select day");
@@ -609,26 +676,52 @@ class DashboardController extends GetxController {
       }
 
       final response = await http.post(
-        Uri.parse("http://192.168.1.230:3002/api/qurbani-day-wise-updates"),
-
+        Uri.parse(
+          "http://192.168.1.230:3002/api/qurbani-day-wise-updates/overall-data",
+        ),
+        // Uri.parse(
+        //   "http://109.199.106.107:3000/api/qurbani-day-wise-updates/overall-data",
+        // ),
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json",
         },
-
         body: jsonEncode({
           "centreId": selectedUpdateCentreId.value,
+
+          /// REQUIRED
+          "date": updateDateController.text,
+
+          /// REQUIRED
           "day": updateSelectedDay.value,
+
           "animalType": updateAnimalType.value,
+
           "totalAnimals": int.tryParse(updateTotalController.text) ?? 0,
-          "totalBookings": int.tryParse(updateTotalController.text) ?? 0,
-          "availableSlots": int.tryParse(updateRemainingController.text) ?? 0,
-          "slaughtered": int.tryParse(updateSlaughteredController.text) ?? 0,
+
+          /// API EXPECTS THIS KEY
+          "animalsSlaughtered":
+              int.tryParse(updateSlaughteredController.text) ?? 0,
+
           "remaining": int.tryParse(updateRemainingController.text) ?? 0,
+
           "supervisor": supervisorController.text,
           "notes": null,
           "remarks": remarksController.text,
         }),
+        // body: jsonEncode({
+        //   "centreId": selectedUpdateCentreId.value,
+        //   "day": updateSelectedDay.value,
+        //   "animalType": updateAnimalType.value,
+        //   "totalAnimals": int.tryParse(updateTotalController.text) ?? 0,
+        //   "totalBookings": int.tryParse(updateTotalController.text) ?? 0,
+        //   "availableSlots": int.tryParse(updateRemainingController.text) ?? 0,
+        //   "slaughtered": int.tryParse(updateSlaughteredController.text) ?? 0,
+        //   "remaining": int.tryParse(updateRemainingController.text) ?? 0,
+        //   "supervisor": supervisorController.text,
+        //   "notes": null,
+        //   "remarks": remarksController.text,
+        // }),
       );
       print("STATUS CODE: ${response.statusCode}");
       print("BODY: ${response.body}");

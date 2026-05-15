@@ -135,23 +135,21 @@ class Dailogboxform extends GetView<DashboardController> {
 
               const SizedBox(height: 18),
 
-              /// TOTAL
+              /// TOTAL ANIMALS (READONLY)
               TextField(
                 controller: controller.updateTotalController,
+                readOnly: true,
                 keyboardType: TextInputType.number,
 
                 decoration: const InputDecoration(
-                  labelText: "Total *",
+                  labelText: "Total Animals",
                   border: OutlineInputBorder(),
                 ),
-
-                onChanged: (v) {
-                  controller.calculateRemaining();
-                },
               ),
+
               const SizedBox(height: 18),
 
-              /// ANIMALS SLAUGHTERED
+              /// ANIMALS SLAUGHTERED (EDITABLE)
               TextField(
                 controller: controller.updateSlaughteredController,
                 keyboardType: TextInputType.number,
@@ -165,9 +163,10 @@ class Dailogboxform extends GetView<DashboardController> {
                   controller.calculateRemaining();
                 },
               ),
+
               const SizedBox(height: 18),
 
-              /// REMAINING
+              /// REMAINING (AUTO)
               TextField(
                 controller: controller.updateRemainingController,
                 readOnly: true,
@@ -177,7 +176,6 @@ class Dailogboxform extends GetView<DashboardController> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 18),
 
               /// SUPERVISOR

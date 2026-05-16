@@ -114,45 +114,44 @@ class DashboardView extends GetView<DashboardController> {
                     ),
 
                     _dashboardCard(
+                      title: "Total Bookings (D1/D2/D3)",
+                      value:
+                          "${controller.bookedD1.value.toStringAsFixed(1)}/"
+                          "${controller.bookedD2.value.toStringAsFixed(1)}/"
+                          "${controller.bookedD3.value.toStringAsFixed(1)}",
+                      icon: Icons.book_online,
+                    ),
+                    _dashboardCard(
                       title: "Total Animals",
                       value: "${stats['totalAnimals'] ?? 0}",
                       icon: Icons.pets,
                     ),
 
                     _dashboardCard(
-                      title: "Total Bookings",
-                      value: "${stats['totalBookings'] ?? 0}",
-                      icon: Icons.book_online,
+                      title: "Total Slaughtered",
+                      value: "${stats['totalSlaughtered'] ?? 0}",
+                      icon: Icons.trolley,
                     ),
 
                     _dashboardCard(
-                      title: "Total Slaughtered",
-                      value: "${stats['totalSlaughtered'] ?? 0}",
-                      icon: Icons.analytics,
+                      title: "Remaining Balance Animals",
+                      value: "${stats['remainingAnimals'] ?? 0}",
+                      icon: Icons.pets,
                     ),
-
                     _dashboardCard(
                       title: "Amount Collected",
                       value: "₹${stats['amountCollected'] ?? 0}",
                       icon: Icons.currency_rupee,
                     ),
-
+                    _dashboardCard(
+                      title: "Total Expenses",
+                      value: "₹${stats['totalExpenses'] ?? 0}",
+                      icon: Icons.currency_rupee,
+                    ),
                     _dashboardCard(
                       title: "Balance Cash",
                       value: "₹${stats['balanceCash'] ?? 0}",
                       icon: Icons.account_balance_wallet,
-                    ),
-
-                    _dashboardCard(
-                      title: "Total Expenses",
-                      value: "₹${stats['totalExpenses'] ?? 0}",
-                      icon: Icons.money_off,
-                    ),
-
-                    _dashboardCard(
-                      title: "Remaining Animals",
-                      value: "${stats['remainingAnimals'] ?? 0}",
-                      icon: Icons.pets,
                     ),
                   ],
                 ),

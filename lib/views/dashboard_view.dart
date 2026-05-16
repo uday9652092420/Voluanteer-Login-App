@@ -87,16 +87,27 @@ class DashboardView extends GetView<DashboardController> {
               children: [
                 const Text(
                   "Eid-ul-Adha (Qurbani) Dashboard",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
 
                 const SizedBox(height: 4),
-
                 const Text(
                   "Madrasa Qurbani Operations & Finance Control Panel",
-                  style: TextStyle(color: Colors.black54, fontSize: 14),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
 
+                // const Text(
+                //   "Madrasa Qurbani Operations & Finance Control Panel",
+                //   style: TextStyle(color: Colors.black54, fontSize: 14),
+                // ),
                 const SizedBox(height: 18),
 
                 GridView.count(
@@ -128,8 +139,11 @@ class DashboardView extends GetView<DashboardController> {
                     ),
 
                     _dashboardCard(
-                      title: "Total Slaughtered",
-                      value: "${stats['totalSlaughtered'] ?? 0}",
+                      title: "Slaughtered (D1/D2/D3)",
+                      value:
+                          "${((dayWise.firstWhereOrNull((e) => e['dayCode'] == 'day1')?['slaughtered']) ?? 0).toString()}/"
+                          "${((dayWise.firstWhereOrNull((e) => e['dayCode'] == 'day2')?['slaughtered']) ?? 0).toString()}/"
+                          "${((dayWise.firstWhereOrNull((e) => e['dayCode'] == 'day3')?['slaughtered']) ?? 0).toString()}",
                       icon: Icons.trolley,
                     ),
 
@@ -359,19 +373,62 @@ class DashboardView extends GetView<DashboardController> {
 
           Text(
             title,
-            style: const TextStyle(fontSize: 13, color: Colors.black54),
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.black, // ✅ changed
+              fontWeight: FontWeight.w600,
+            ),
           ),
 
           const SizedBox(height: 8),
 
           Text(
             value,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black, // ✅ changed
+            ),
           ),
         ],
       ),
     );
   }
+  // Widget _dashboardCard({
+  //   required String title,
+  //   required String value,
+  //   required IconData icon,
+  // }) {
+  //   return Container(
+  //     padding: const EdgeInsets.all(14),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(16),
+  //       boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5)],
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         Icon(icon, color: AppColors.primary, size: 30),
+
+  //         const SizedBox(height: 10),
+
+  //         Text(
+  //           title,
+  //           style: const TextStyle(fontSize: 13, color: Colors.black54),
+  //         ),
+
+  //         const SizedBox(height: 8),
+
+  //         Text(
+  //           value,
+  //           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _sectionCard({required String title, required Widget child}) {
     return Container(

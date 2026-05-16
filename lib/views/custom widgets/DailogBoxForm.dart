@@ -111,11 +111,10 @@ class Dailogboxform extends GetView<DashboardController> {
                     );
                   }).toList(),
 
-                  onChanged: (v) {
+                  onChanged: (v) async {
                     controller.updateAnimalType.value = v;
 
-                    /// AUTO FILL TOTAL
-                    controller.setTotalByAnimalType();
+                    await controller.fetchDayAnimalData();
                   },
                 ),
               ),

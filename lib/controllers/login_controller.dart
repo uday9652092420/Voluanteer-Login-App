@@ -27,7 +27,6 @@ class LoginController extends GetxController {
 
       final response = await http.post(
         Uri.parse("http://192.168.1.230:3002/api/qurbani-volunteers/login"),
-        // Uri.parse("http://109.199.106.107:3000/api/qurbani-volunteers/login"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"username": username, "password": password}),
       );
@@ -35,23 +34,30 @@ class LoginController extends GetxController {
       print("STATUS: ${response.statusCode}");
       print("BODY: ${response.body}");
 
-      final data = jsonDecode(response.body);
+      final json = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        /// ✅ SAVE REAL JWT TOKEN
-        box.write("token", data["token"]);
+        /// ✅ CORRECT DATA PATH
+        final loginData = json["data"];
 
-        /// ✅ SAVE VOLUNTEER DATA
-        box.write("volunteer", data["volunteer"]);
+        /// ✅ SAVE TOKEN
+        await box.write("token", loginData["accessToken"]);
+
+        /// ✅ SAVE VOLUNTEER
+        await box.write("volunteer", loginData["volunteer"]);
+
+        print("TOKEN: ${box.read("token")}");
+        print("VOLUNTEER: ${box.read("volunteer")}");
 
         Get.snackbar("Success", "Login successful");
 
         Get.offAllNamed(Routes.DASHBOARD);
       } else {
-        Get.snackbar("Error", data["error"] ?? "Invalid credentials");
+        Get.snackbar("Error", json["message"] ?? "Invalid credentials");
       }
     } catch (e) {
-      print("ERROR: $e");
+      print("LOGIN ERROR: $e");
+
       Get.snackbar("Error", "Server not reachable");
     } finally {
       isLoading.value = false;
